@@ -80,7 +80,7 @@ if st.button("CATCH FISH"):
         for s in strat: st.write(s)
         
         st.markdown("---")
-        p_note = "Good Range (29.80-30.20): Optimal." if 29.80 <= p <= 30.20 else "LOCKJAW RANGE (30.21-30.50+): High pressure, slow activity."
+        p_note = "Good Pressure Range (29.80-30.20): Optimal." if 29.80 <= p <= 30.20 else "LOCKJAW RANGE (30.21-30.50+): High pressure, slow activity."
         st.write(f"**BARO NOTE:** {p_note}")
     except Exception as e:
         st.error(f"Data feed delay. Please try again. Error: {e}")
