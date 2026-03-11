@@ -1,3 +1,10 @@
+st.markdown("""
+    <head>
+        <meta property="og:title" content="STRIKE LOGIC">
+        <meta property="og:description" content="Real-time water data and bait-to-structure strategies for Florida fishing.">
+        <meta property="og:type" content="website">
+    </head>
+""", unsafe_allow_html=True)
 import streamlit as st
 import requests
 
