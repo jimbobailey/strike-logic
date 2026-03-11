@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-# THEME: Glowing Orange, Black, White, Gray (via custom CSS)
+# THEME: Glowing Orange, Black, White, Gray
 st.markdown("""
     <style>
     .stApp { background-color: #1A1A1A; color: #FFFFFF; }
@@ -10,7 +10,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# DATA MAPPING
 LOC_DATA = {
     "Apalachicola River (Chattahoochee)": ["02358000", 30.7047, -84.8569, "River"],
     "Apalachicola River (Blountstown)": ["02358700", 30.4385, -85.0113, "River"],
@@ -51,35 +50,37 @@ TACTICS = {
 }
 
 st.title("STRIKE LOGIC")
-
 name = st.selectbox("Location", list(LOC_DATA.keys()))
 species = st.selectbox("Species", list(TACTICS.keys()))
 
-if st.button("ANALYZE"):
-    station_id, lat, lon, w_type = LOC_DATA[name]
-    
-    # Data Fetch
-    u_url = f"https://waterservices.usgs.gov/nwis/iv/?format=json&sites={station_id}&parameterCd=00065"
-    level = requests.get(u_url, timeout=5).json()['value']['timeSeries'][0]['values'][0]['value'][0]['value']
-    
-    # Weather
-    headers = {'User-Agent': 'StrikeLogic'}
-    grid = requests.get(f"https://api.weather.gov/points/{lat},{lon}", headers=headers).json()
-    fc = requests.get(grid['properties']['forecast'], headers=headers).json()['properties']['periods'][0]
-    p = 30.05
-    
-    # Output
-    st.write(f"**GAGE HEIGHT:** {level} FT")
-    st.write(f"**WEATHER:** {fc['shortForecast']} | {fc['temperature']}°F")
-    st.write(f"**PRESSURE:** {p} inHg")
-    score = 5 if 29.80 <= p <= 30.20 else 2
-    st.write(f"**PREDICTION:** {score}/5")
-    st.markdown("---")
-    
-    strat = TACTICS.get(species, {}).get(w_type, ["1. Search.", "2. Search.", "3. Change Location."])
-    st.subheader("STRATEGIES")
-    for s in strat: st.write(s)
-    
-    st.markdown("---")
-    p_note = "Good Range (29.80-30.20): Optimal." if 29.80 <= p <= 30.20 else "LOCKJAW RANGE (30.21-30.50+): High pressure."
-    st.write(f"**BARO NOTE:** {p_note}")
+if st.button("CATCH FISH"):
+    try:
+        station_id, lat, lon, w_type = LOC_DATA[name]
+        
+        # USGS Level with extended 15s timeout
+        u_url = f"https://waterservices.usgs.gov/nwis/iv/?format=json&sites={station_id}&parameterCd=00065"
+        level_data = requests.get(u_url, timeout=15).json()
+        level = level_data['value']['timeSeries'][0]['values'][0]['value'][0]['value']
+        
+        # Weather / Pressure
+        headers = {'User-Agent': 'StrikeLogic'}
+        grid = requests.get(f"https://api.weather.gov/points/{lat},{lon}", headers=headers, timeout=10).json()
+        fc = requests.get(grid['properties']['forecast'], headers=headers, timeout=10).json()['properties']['periods'][0]
+        p = 30.05 
+        
+        st.write(f"**GAGE HEIGHT:** {level} FT")
+        st.write(f"**WEATHER:** {fc['shortForecast']} | {fc['temperature']}°F")
+        st.write(f"**PRESSURE:** {p} inHg")
+        score = 5 if 29.80 <= p <= 30.20 else 2
+        st.write(f"**PREDICTION:** {score}/5")
+        st.markdown("---")
+        
+        strat = TACTICS.get(species, {}).get(w_type, ["1. Search.", "2. Search.", "3. Change Location."])
+        st.subheader("STRATEGIES")
+        for s in strat: st.write(s)
+        
+        st.markdown("---")
+        p_note = "Good Range (29.80-30.20): Optimal." if 29.80 <= p <= 30.20 else "LOCKJAW RANGE (30.21-30.50+): High pressure, slow activity."
+        st.write(f"**BARO NOTE:** {p_note}")
+    except Exception as e:
+        st.error(f"Data feed delay. Please try again. Error: {e}")
