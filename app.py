@@ -34,7 +34,7 @@ st.title("STRIKE LOGIC")
 name = st.selectbox("LOCATION", list(LOC_DATA.keys()))
 species = st.selectbox("SPECIES", list(TACTICS.keys()))
 
-if st.button("CATCH FISH"):
+if st.button("ANALYZE"):
     sid, lat, lon, w_type = LOC_DATA[name]
     
     # Robust USGS Fetch
@@ -47,21 +47,26 @@ if st.button("CATCH FISH"):
             level = f"{ts[0]['values'][0]['value'][0]['value']} FT"
     except: pass
 
-    st.write(f"### GAGE HEIGHT: {level}")
-    
     # Weather
+    weather_res = "Data Unavailable"
     try:
-        grid = requests.get(f"https://api.weather.gov/points/{lat},{lon}", timeout=5, headers={'User-Agent': 'StrikeLogic'}).json()
-        fc = requests.get(grid['properties']['forecast'], timeout=5).json()['properties']['periods'][0]
-        st.write(f"### WEATHER: {fc['shortForecast']} | {fc['temperature']}°F")
-    except: st.write("### WEATHER: Data Unavailable")
+        headers = {'User-Agent': 'StrikeLogic'}
+        grid = requests.get(f"https://api.weather.gov/points/{lat},{lon}", timeout=5, headers=headers).json()
+        fc = requests.get(grid['properties']['forecast'], timeout=5, headers=headers).json()['properties']['periods'][0]
+        weather_res = f"{fc['shortForecast']} | {fc['temperature']}°F"
+    except: pass
         
     p = 30.05
+    st.write(f"### GAGE HEIGHT: {level}")
+    st.write(f"### WEATHER: {weather_res}")
     st.write(f"### PRESSURE: {p} inHg")
     
-    strat = TACTICS[species].get(w_type, ["1. Search."])
-    st.subheader("STRATEGIES")
-    for s in strat: st.write(s)
+    # RESTORED: Pressure Note Logic
+    if 29.80 <= p <= 30.20:
+        st.success("BARO NOTE: Good Range (29.80-30.20): Optimal.")
+    else:
+        st.error("BARO NOTE: LOCKJAW RANGE (30.21-30.50+): High pressure, slow activity.")
     
-    if not (29.80 <= p <= 30.20):
-        st.error("BARO NOTE: LOCKJAW RANGE (30.21-30.50+)")
+    st.subheader("STRATEGIES")
+    strat = TACTICS[species].get(w_type, ["1. Search."])
+    for s in strat: st.write(s)
