@@ -22,12 +22,33 @@ LOC_DATA = {
     "Lake Seminole": ["02357500", 30.7088, -84.8631, "Lake"]
 }
 
+# FULL STRATEGY MATRIX
 TACTICS = {
-    "Largemouth Bass": {"River": ["1. 3/8oz Jig & Craw", "2. Topwater Frog", "3. (Dead Bite) Downsize finesse"], "Lake": ["1. Deep crankbait", "2. Senko Wacky-rig", "3. (Dead Bite) Drop-shot"], "Creek": ["1. Spinnerbait", "2. Jerkbait", "3. (Dead Bite) Weightless plastic"]},
-    "Shellcracker": {"River": ["1. Red wigglers", "2. Beetle-spin", "3. (Dead Bite) Slow drag"], "Lake": ["1. Earthworms", "2. Hybrid worms", "3. (Dead Bite) Split-shot"], "Creek": ["1. Crickets", "2. Wax worms", "3. (Dead Bite) Micro-jig"]},
-    "Channel/Blue Catfish": {"River": ["1. Cut shad", "2. Chicken liver", "3. (Dead Bite) Dip bait"], "Lake": ["1. Drift fishing", "2. Punch bait", "3. (Dead Bite) Live bluegill"], "Creek": ["1. Nightcrawlers", "2. Cut bait", "3. (Dead Bite) Increase scent"]},
-    "Shoal Bass": {"River": ["1. Topwater walker", "2. Craw crankbait", "3. (Dead Bite) Small tube jig"], "Lake": ["N/A", "N/A", "N/A"], "Creek": ["1. Spinnerbait", "2. Fluke", "3. (Dead Bite) Micro-jig"]},
-    "Black Crappie": {"River": ["1. Vertical jig", "2. Minnow float", "3. (Dead Bite) Trolling slow"], "Lake": ["1. Minnows", "2. Chartreuse jigs", "3. (Dead Bite) Slow vertical"], "Creek": ["1. Small tube jigs", "2. Beetle-spin", "3. (Dead Bite) Dead-sticking"]}
+    "Largemouth Bass": {
+        "River": ["1. 3/8oz Jig & Craw in current seams.", "2. Topwater frog over grassy banks.", "3. (Dead Bite) Downsize to 4in finesse worm, slow drag."],
+        "Lake": ["1. Deep diving crankbait on main lake points.", "2. Senko Wacky-rig around boat docks.", "3. (Dead Bite) Drop-shot in 15ft+ near structure."],
+        "Creek": ["1. Spinnerbait along wood structure.", "2. Jerkbait in pockets.", "3. (Dead Bite) Weightless soft-plastic jerkbait, dead-sticking."]
+    },
+    "Shellcracker": {
+        "River": ["1. Red wigglers on bottom in backwater eddies.", "2. Small beetle-spin near lily pads.", "3. (Dead Bite) Cast beyond bed and drag slowly."],
+        "Lake": ["1. Earthworms near shell beds.", "2. Hybrid redworms on drop-offs.", "3. (Dead Bite) Light split-shot, long leader."],
+        "Creek": ["1. Crickets near overhanging limbs.", "2. Wax worms in eddies.", "3. (Dead Bite) Switch to micro-jigging."]
+    },
+    "Channel/Blue Catfish": {
+        "River": ["1. Cut shad on deep bottom bends.", "2. Chicken liver in slow pools.", "3. (Dead Bite) High-scent dip bait, stationary."],
+        "Lake": ["1. Drift fishing shad on flats.", "2. Punch bait near drop-offs.", "3. (Dead Bite) Live bluegill, anchored."],
+        "Creek": ["1. Nightcrawlers on deep holes.", "2. Cut bait near feeder mouths.", "3. (Dead Bite) Increase scent profile."]
+    },
+    "Shoal Bass": {
+        "River": ["1. Topwater walker in current breaks.", "2. Craw-pattern crankbait on rocks.", "3. (Dead Bite) Small tube jig, bottom bounce."],
+        "Lake": ["N/A", "N/A", "N/A"],
+        "Creek": ["1. Spinnerbait in eddies.", "2. Fluke on light lead.", "3. (Dead Bite) Micro-jig, slow drift."]
+    },
+    "Black Crappie": {
+        "River": ["1. Vertical jigging timber.", "2. Minnow under slip float.", "3. (Dead Bite) Trolling slow with small curly tails."],
+        "Lake": ["1. Minnows over brush piles.", "2. Chartreuse jigs in coves.", "3. (Dead Bite) Slow vertical jigging."],
+        "Creek": ["1. Small tube jigs near wood.", "2. Beetle-spin slow roll.", "3. (Dead Bite) Live minnow, dead-sticking."]
+    }
 }
 
 st.title("STRIKE LOGIC")
@@ -57,15 +78,15 @@ if st.button("ANALYZE"):
     except: pass
         
     p = 30.05
-    st.write(f"### GAGE HEIGHT: {level}")
+    st.write(f"### WATER LEVEL: {level}")
     st.write(f"### WEATHER: {weather_res}")
-    st.write(f"### PRESSURE: {p} inHg")
+    st.write(f"### BAROMETRIC PRESSURE: {p} inHg")
     
-    # RESTORED: Pressure Note Logic
+    # Updated Pressure Note
     if 29.80 <= p <= 30.20:
-        st.success("BARO NOTE: Good Range (29.80-30.20): Optimal.")
+        st.success("BAROMETRIC PRESSURE NOTE: Good Range (29.80-30.20): Optimal.")
     else:
-        st.error("BARO NOTE: LOCKJAW RANGE (30.21-30.50+): High pressure, slow activity.")
+        st.error("BAROMETRIC PRESSURE NOTE: LOCKJAW RANGE (30.21-30.50+): High pressure, slow activity.")
     
     st.subheader("STRATEGIES")
     strat = TACTICS[species].get(w_type, ["1. Search."])
